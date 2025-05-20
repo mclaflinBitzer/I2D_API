@@ -2,12 +2,13 @@
 import pandas as pd
 import os
 from datetime import datetime
+from openpyxl import load_workbook
 
 def new_records(df):
     current_date = datetime.now().strftime("%Y-%m-%d")
 
     # Construct filename with current date
-    filename = f"../updated_{current_date}.xlsx"
+    filename = f"updated_{current_date}.xlsx"
 
     with pd.ExcelWriter(filename, engine="xlsxwriter") as writer:
         df.to_excel(writer, sheet_name="Sheet1", index=False, startrow=0)
@@ -26,7 +27,7 @@ def new_records(df):
     })
 
 def records(df):
-    file_path = "../records.xlsx"
+    file_path = "records.xlsx"
 
     # Check if file exists and determine mode and start row
     if os.path.exists(file_path):
