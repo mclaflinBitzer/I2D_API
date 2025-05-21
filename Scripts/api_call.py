@@ -72,11 +72,11 @@ def api_call():
 
                     all_articles.append({"Title": title, "Summary": summary, "URL": url, "Date": date})
 
-                    print(f"\nArticle {total_articles + i}")
-                    print(f"Title   : {title}")
-                    print(f"Summary : {summary}")
-                    print(f"URL     : {url}")
-                    print(f"Date    : {date}")
+                    # print(f"\nArticle {total_articles + i}")
+                    # print(f"Title   : {title}")
+                    # print(f"Summary : {summary}")
+                    # print(f"URL     : {url}")
+                    # print(f"Date    : {date}")
 
                 total_articles += len(articles)
                 page += 1
