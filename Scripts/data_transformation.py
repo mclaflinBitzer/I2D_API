@@ -97,6 +97,24 @@ def remove_matches(text):
 
     return updated_string
 
+def truncate_summary(summary):
+    max_length=200
+    # If summary is already short enough, return as is
+    if len(summary) <= max_length:
+        return summary
+
+    # Cut the summary at max_length
+    truncated = summary[:max_length]
+
+    # Find the last space to avoid splitting words
+    last_space = truncated.rfind(' ')
+
+    # If no space found, just cut at max_length
+    if last_space == -1:
+        return truncated.rstrip() + "..."
+
+    # Cut at the last space and append ellipsis
+    return truncated[:last_space].rstrip() + "..."
 
 
 
@@ -125,6 +143,7 @@ def data_transformations(all_articles):
     df['Summary'] = df['Summary'].apply(remove_html_and_script)
     df['Summary'] = df['Summary'].apply(unicode_handling)
     df['Summary'] = df['Summary'].apply(remove_matches)
+    df['Summary'] = df['Summary'].apply(truncate_summary)
     df['Date'] = df['Date'].apply(extract_date_ddmmyyyy)
 
     print("Data transformations completed")
