@@ -97,6 +97,7 @@ def remove_matches(text):
 
     return updated_string
 
+
 def truncate_summary(summary):
     max_length=200
     # If summary is already short enough, return as is
