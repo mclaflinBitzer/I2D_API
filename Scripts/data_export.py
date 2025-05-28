@@ -77,13 +77,13 @@ def email_records(df):
     #convert 'Date' column to datetime format
     df['Date'] = pd.to_datetime(df['Date'])
 
-    #creating new dataframe based upon filter of last 7 days worth of articles 
-    one_week_ago = datetime.now() - pd.Timedelta(days=7)
-    recent_data = df[df['Date'] >= one_week_ago]
+    #creating new dataframe based upon filter of last 14 days worth of articles 
+    two_weeks_ago = datetime.now() - pd.Timedelta(days=14)
+    recent_data = df[df['Date'] >= two_weeks_ago]
     recent_data = recent_data.reset_index(drop=True)
 
     with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
-        df.to_excel(writer, sheet_name="Sheet1", index=False, startrow=0)
+        recent_data.to_excel(writer, sheet_name="Sheet1", index=False, startrow=0)
 
         workbook = writer.book
         worksheet = writer.sheets["Sheet1"]
