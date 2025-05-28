@@ -5,10 +5,10 @@ from datetime import datetime
 from openpyxl import load_workbook
 
 def new_records(df):
-    current_date = datetime.now().strftime("%Y-%m-%d")
+    #current_date = datetime.now().strftime("%Y-%m-%d")
 
     # Construct filename with current date
-    filename = f"updated.xlsx"
+    filename = "updated.xlsx"
 
     with pd.ExcelWriter(filename, engine="xlsxwriter") as writer:
         df.to_excel(writer, sheet_name="Sheet1", index=False, startrow=0)
@@ -71,9 +71,39 @@ def records(df):
         print(f"Data written to {file_path}")
 
 
+def email_records(df):
+    file_path = "email_records.xlsx"
+
+    #convert 'Date' column to datetime format
+    df['Date'] = pd.to_datetime(df['Date'])
+
+    #creating new dataframe based upon filter of last 7 days worth of articles 
+    one_week_ago = datetime.now() - pd.Timedelta(days=7)
+    recent_data = df[df['Date'] >= one_week_ago]
+    recent_data = recent_data.reset_index(drop=True)
+
+    with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
+        df.to_excel(writer, sheet_name="Sheet1", index=False, startrow=0)
+
+        workbook = writer.book
+        worksheet = writer.sheets["Sheet1"]
+
+        # defining column settings
+        (max_row, max_col) = df.shape
+        column_settings = [{"header": col} for col in df.columns]
+
+        # Define table range & add table
+        worksheet.add_table(0, 0, max_row, max_col -1,{
+            "columns": column_settings,
+            "name": "Table1",
+    })
+
+    print(f"Data written to {file_path}")
+
 
 
 
 def export_data(df):
     new_records(df)
     records(df)
+    email_records(df)
