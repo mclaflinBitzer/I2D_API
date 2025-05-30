@@ -71,32 +71,67 @@ def records(df):
         print(f"Data written to {file_path}")
 
 
-def email_records(df):
+def email_records_export(df):
+
+    # file_path = "email_records.xlsx"
+
+    # with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
+    #     df.to_excel(writer, sheet_name="Sheet1", index=False, startrow=0)
+
+    #     workbook = writer.book
+    #     worksheet = writer.sheets["Sheet1"]
+
+    #     # defining column settings
+    #     (max_row, max_col) = df.shape
+    #     column_settings = [{"header": col} for col in df.columns]
+
+    #     # Define table range & add table
+    #     worksheet.add_table(0, 0, max_row, max_col -1,{
+    #         "columns": column_settings,
+    #         "name": "Table1",
+    # })
+
+    # print(f"Data written to {file_path}")
+
     file_path = "email_records.xlsx"
 
-    #convert 'Date' column to datetime format
-    df['Date'] = pd.to_datetime(df['Date'])
+    # Check if the file exists and load existing sheets
+    if os.path.exists(file_path):
+        with pd.ExcelWriter(file_path, engine="openpyxl", mode="a", if_sheet_exists="replace") as writer:
+            df.to_excel(writer, sheet_name="Sheet1", index=False, startrow=0)
 
-    #creating new dataframe based upon filter of last 14 days worth of articles 
-    two_weeks_ago = datetime.now() - pd.Timedelta(days=14)
-    recent_data = df[df['Date'] >= two_weeks_ago]
-    recent_data = recent_data.reset_index(drop=True)
+            # Get access to the openpyxl workbook and sheet for styling
+            workbook = writer.book
+            worksheet = writer.sheets["Sheet1"]
 
-    with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
-        recent_data.to_excel(writer, sheet_name="Sheet1", index=False, startrow=0)
+            # Add table (openpyxl uses different API; xlsxwriter tables won't work here)
+            from openpyxl.worksheet.table import Table, TableStyleInfo
 
-        workbook = writer.book
-        worksheet = writer.sheets["Sheet1"]
+            # Define table range
+            table_ref = f"A1:{chr(65 + df.shape[1] - 1)}{df.shape[0] + 1}"
+            table = Table(displayName="Table1", ref=table_ref)
 
-        # defining column settings
-        (max_row, max_col) = df.shape
-        column_settings = [{"header": col} for col in df.columns]
+            # Add style
+            style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
+                                   showLastColumn=False, showRowStripes=True, showColumnStripes=False)
+            table.tableStyleInfo = style
+            worksheet.add_table(table)
 
-        # Define table range & add table
-        worksheet.add_table(0, 0, max_row, max_col -1,{
-            "columns": column_settings,
-            "name": "Table1",
-    })
+    else:
+        # File doesn't exist yet – create it from scratch using xlsxwriter
+        with pd.ExcelWriter(file_path, engine="xlsxwriter") as writer:
+            df.to_excel(writer, sheet_name="Sheet1", index=False, startrow=0)
+
+            workbook = writer.book
+            worksheet = writer.sheets["Sheet1"]
+
+            (max_row, max_col) = df.shape
+            column_settings = [{"header": col} for col in df.columns]
+
+            worksheet.add_table(0, 0, max_row, max_col - 1, {
+                "columns": column_settings,
+                "name": "Table1",
+            })
 
     print(f"Data written to {file_path}")
 
@@ -106,4 +141,3 @@ def email_records(df):
 def export_data(df):
     new_records(df)
     records(df)
-    email_records(df)
