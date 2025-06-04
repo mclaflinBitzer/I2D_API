@@ -107,7 +107,7 @@ def article_call():
         "accessGroups": "8329",
         "returnFields": "*",
         # "queryString": "*:*",  # Query for all records
-        "queryString": "dateline:[NOW-14DAYS TO NOW] AND topicId:135576",  # Query for all records within time range to update w/ topicId
+        "queryString": "dateline:[NOW-14DAYS TO NOW] AND topicId:143473",  # Query for all records within time range to update w/ topicId
         "maxRows": 500,  # Limit to x results
         "sort": "dateline desc",  # Sort by UID in descending order
     }
